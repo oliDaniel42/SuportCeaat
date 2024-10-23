@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "MindMate",
-    "slug": "MindMate",
+    "name": "SuporteCeaat",
+    "slug": "suporteceaat",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -31,6 +31,18 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "b1081266-9603-4d83-812c-c3dfb0332029"
+      }
+    },
+    "owner": "oliveiradaniel42",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/b1081266-9603-4d83-812c-c3dfb0332029"
     }
   }
 }
