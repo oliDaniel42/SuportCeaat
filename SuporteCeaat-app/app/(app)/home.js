@@ -5,22 +5,13 @@ import { useAuth } from '../../context/authContext';
 
 const Home = () => {
 
-    const{logout} = useAuth()
-    const handleLogout = async () =>{
-        await logout()
-
-    }
+    
 
     return (
         <View style={styles.container}>
             <Stack.Screen options={{ headerShown: false }} />
             <Text style={styles.welcomeText}>Bem-vindo ao App!</Text>
             <Text style={styles.placeholderText}>Em breve, mais informações sobre o app aqui.</Text>
-
-            <Button 
-                title='Deslogar'
-                onPress={handleLogout}
-            />
         </View>
     );
 };
@@ -40,6 +31,9 @@ const styles = StyleSheet.create({
     placeholderText: {
         fontSize: 14,
         color: '#888',
+        marginBottom: 20,
+    },
+    Button:{
         marginBottom: 20,
     },
 });

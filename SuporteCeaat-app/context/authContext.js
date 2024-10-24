@@ -7,24 +7,23 @@ import { useRouter } from "expo-router";
 
 export const AuthContext = createContext();
 
-
 export const AuthContextProvider = ({children})=>{
+    
     
     const router = useRouter();
     const  [user, setUser] = useState(null);
     const [isAuthenticated, setIsAuthenticated] = useState(undefined);
-
-
-
+    
+    
+    
     useEffect (() =>{
-       const unsub = onAuthStateChanged(auth, (user) =>{
-        if (user){
-        
-            setIsAuthenticated(true)
-            setUser(user)
-            initializeUserDocument(user)
-            router.replace('home')
-            
+        const unsub = onAuthStateChanged(auth, (user) =>{
+            if (user){
+                
+                setIsAuthenticated(true)
+                setUser(user)
+                router.replace('App')
+
         }else{
             setIsAuthenticated(false)
             setUser(null)
@@ -35,10 +34,12 @@ export const AuthContextProvider = ({children})=>{
     }, [])
 
     const login = async (email, password) =>{
+        
         try{
 
             const response = await signInWithEmailAndPassword(auth, email, password)
             return {sucess: true}
+            
             
         }catch(e){
             let msg = e.message
@@ -49,22 +50,7 @@ export const AuthContextProvider = ({children})=>{
         }
     }
 
-    // Função para inicializar o documento do usuário
-    const initializeUserDocument = async (user) => {
-        const userDocRef = doc(db, "users", user.uid);
-        const userDoc = await getDoc(userDocRef);
 
-        // Verifica se o documento já existe
-        if (!userDoc.exists()) {
-            await setDoc(userDocRef, {
-                email: user.email,
-                role: "Aluno", // ou outro valor que você deseja definir
-                createdAt: new Date(),
-            });
-            console.log("Documento do usuário criado com sucesso!");
-        }
-    };
-   
     //deslogar
 
     const logout = async () =>{
@@ -81,6 +67,7 @@ export const AuthContextProvider = ({children})=>{
         <AuthContext.Provider value={{user, isAuthenticated, login, logout}}>
             {children}
         </AuthContext.Provider>
+
     )
 
 }

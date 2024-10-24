@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, Image, TextInput, TouchableOpacity, Pressable, Alert, Linking } from 'react-native';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { moderateScale } from 'react-native-core-responsive-screen';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { StatusBar } from 'react-native';
@@ -36,6 +36,8 @@ export default function alunoLogin() {
         Linking.openURL("http://consultaaluno.educacao.ba.gov.br")
     };
 
+    
+
     return (
         <CustomKeyBoardView>
             <View style={{ flex: 1, padding: moderateScale(20) }}>
@@ -50,7 +52,7 @@ export default function alunoLogin() {
                         source={require('../assets/images/login.png')}
                     />
 
-                    <Text style={styles.title}>Login do Aluno</Text>
+                    <Text style={styles.title}>Bem-Vindo aluno(a)</Text>
                     
                     <View style={{ padding: 10 }}>
                         {/* Email and password Input  */}
@@ -64,10 +66,14 @@ export default function alunoLogin() {
                             <TextInput
                                 onChangeText={value=> emailRef.current=value}
                                 placeholder="Email"
+                                autoComplete='email'
+                                autoCorrect={false}
                                 style={styles.input}
                                 keyboardType="email-address"
                                 autoCapitalize="none"
                             />
+
+
                         </View>
                         <View style={styles.inputContainer}>
                             <Ionicons 
@@ -109,12 +115,13 @@ export default function alunoLogin() {
                                 <Text style={[tw`font-semibold text-purple-700`, {fontSize: moderateScale(12)}]}>Consultar</Text>
                             </Pressable>
                         </View>
-                        
+
                     </View>
                 </View>
             </View>
         </CustomKeyBoardView>
     );
+    
 }
 
 const styles = StyleSheet.create({
