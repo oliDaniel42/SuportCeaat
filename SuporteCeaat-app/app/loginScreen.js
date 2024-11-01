@@ -9,7 +9,7 @@ import Loading from '../components/Loading';
 import CustomKeyBoardView from '../components/CustomKeyboardView';
 import { useAuth } from '../context/authContext';
 
-export default function alunoLogin() {
+export default function login() {
     const router = useRouter();
 
     const [loading, setLoading] = useState(false);
@@ -27,17 +27,12 @@ export default function alunoLogin() {
         setLoading(true);
         const response = await login(emailRef.current, passwordRef.current);
         setLoading(false);
+        router.push('inicial')
         if(!response){
             Alert.alert("Login incorreto")
         }
     }
-
-    const linkEnova = ()  => {
-        Linking.openURL("http://consultaaluno.educacao.ba.gov.br")
-    };
-
     
-
     return (
         <CustomKeyBoardView>
             <View style={{ flex: 1, padding: moderateScale(20) }}>
@@ -52,7 +47,7 @@ export default function alunoLogin() {
                         source={require('../assets/images/login.png')}
                     />
 
-                    <Text style={styles.title}>Bem-Vindo aluno(a)</Text>
+                    <Text style={styles.title}>Bem-Vindo!</Text>
                     
                     <View style={{ padding: 10 }}>
                         {/* Email and password Input  */}
@@ -106,16 +101,6 @@ export default function alunoLogin() {
                             </View>
                             )}
                         </View>
-
-
-
-                        <View style={[tw`flex-row justify-center`, {paddingTop: 20}]}>
-                            <Text style={[tw`font-semibold text-neutral-500`, {fontSize: moderateScale(12)}]}>Não sabe seu email enova? </Text>
-                            <Pressable onPress={linkEnova}>
-                                <Text style={[tw`font-semibold text-purple-700`, {fontSize: moderateScale(12)}]}>Consultar</Text>
-                            </Pressable>
-                        </View>
-
                     </View>
                 </View>
             </View>

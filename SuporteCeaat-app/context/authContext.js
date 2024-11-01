@@ -3,13 +3,14 @@ import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from "firebas
 import { setDoc, getDoc } from "firebase/firestore";
 import { auth, db } from "../firebaseConfig"
 import { useRouter } from "expo-router";
+import  { useNavigation } from "@react-navigation/native";
 
 
 export const AuthContext = createContext();
 
 export const AuthContextProvider = ({children})=>{
     
-    
+    const navigation = useNavigation();
     const router = useRouter();
     const  [user, setUser] = useState(null);
     const [isAuthenticated, setIsAuthenticated] = useState(undefined);
@@ -19,11 +20,9 @@ export const AuthContextProvider = ({children})=>{
     useEffect (() =>{
         const unsub = onAuthStateChanged(auth, (user) =>{
             if (user){
-                
                 setIsAuthenticated(true)
                 setUser(user)
-                router.replace('App')
-
+                
         }else{
             setIsAuthenticated(false)
             setUser(null)

@@ -9,9 +9,9 @@ const Home = () => {
   const [role, setRole] = useState(null);
 
   const signIns = {
-    "Aluno(a)": () => router.replace('alunoLogin') ,
-    "Funcionário(a)": () => router.replace('funcionarioLogin'),
-    "Psicopedagogo(a)": () => router.replace('psicoLogin'),
+    "Aluno(a)": () => router.replace('home') ,
+    "Funcionário(a)": () => router.replace('home'),
+    "Psicopedagogo(a)": () => router.replace('home'),
   };
   
   // Função para salvar a escolha no AsyncStorage
@@ -74,7 +74,8 @@ const Home = () => {
         
         <View style={styles.button}>
             <Button 
-            title="Sou funcionário(a)" 
+            title="Sou funcionário(a)"
+            role = "Funcionário(a)"
             onPress={() => handleSelection('Funcionário(a)')} 
             color="#4CAF50"
             />
@@ -82,18 +83,13 @@ const Home = () => {
         
         <View style={styles.button}>
             <Button 
-            title="Sou psicopedagogo(a)" 
+            title="Sou psicopedagogo(a)"
+            role = "Psicopedagogo(a)"
             onPress={() => handleSelection('Psicopedagogo(a)')} 
             color="#FF5722"
             />
         </View>
       </View>
-
-      {role && (
-        <Text style={styles.selectionText}>
-          Bem vindo: {role}
-        </Text>
-      )}
     </View>
   );
 };

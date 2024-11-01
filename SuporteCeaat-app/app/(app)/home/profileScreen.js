@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Button, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useAuth } from '../../context/authContext'
+import { useAuth } from '../../../context/authContext'
 import {Stack} from  'expo-router'
 
 
@@ -20,7 +20,7 @@ const ProfileScreen = () => {
       <Stack.Screen options={{ headerShown: false }} />
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>Nome do Aluno</Text>
+          <Text style={styles.headerTitle}>Nome do usuário</Text>
         </View>
 
         {/* Profile Icon */}
@@ -54,13 +54,9 @@ const ProfileScreen = () => {
         <Text style={styles.editButtonText}>Desconectar</Text>
         </TouchableOpacity>
 
-
     </View>
     );
-
-    
 };
-
 
 const styles = StyleSheet.create({
   container: {
@@ -83,7 +79,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 20,
     color: '#fff',
-    marginLeft: 120,
+    marginLeft: 110,
     alignItems:"center",
     paddingTop: 20,
   },
