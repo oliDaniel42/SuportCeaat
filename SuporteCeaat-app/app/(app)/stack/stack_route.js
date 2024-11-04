@@ -1,15 +1,41 @@
 import { createStackNavigator } from "@react-navigation/stack";
-import ProfileScreen from "../home/profileScreen";
+import ProfileScreen from "../home/settings/profileScreen";
+import StudentProfile from "../home/settings/studentProfile";
+import { useRole } from "../../inicial";
 
 const Stack = createStackNavigator();
 
-export default  function HomeStack() {
-    return (
-        <Stack.Navigator screenOptions={{title: ''}}>
-            <Stack.Screen
+const getScreen = (role) => {
+
+  
+  switch (role) {
+    case "Funcionário(a)":
+    case "Psicopedagogo(a)":
+      return (
+          <Stack.Screen
             name="Home"
             component={ProfileScreen}
-            />
-        </Stack.Navigator>
-    )
+          />
+
+      );
+    case "Aluno(a)":
+      return (
+          <Stack.Screen
+            name="Register"
+            component={StudentProfile}
+          />
+      );
+    default:
+      return null;
+  }
+};
+
+export default function HomeStack() {
+  const { role } = useRole();
+
+  return (
+    <Stack.Navigator screenOptions={{ title: '' }}>
+      {getScreen(role)}
+    </Stack.Navigator>
+  );
 }

@@ -2,19 +2,17 @@ import { Children, createContext, useContext, useEffect, useState } from "react"
 import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { setDoc, getDoc } from "firebase/firestore";
 import { auth, db } from "../firebaseConfig"
-import { useRouter } from "expo-router";
-import  { useNavigation } from "@react-navigation/native";
-
+import { useRole } from "../app/inicial";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const AuthContext = createContext();
 
 export const AuthContextProvider = ({children})=>{
-    
-    const navigation = useNavigation();
-    const router = useRouter();
+
     const  [user, setUser] = useState(null);
     const [isAuthenticated, setIsAuthenticated] = useState(undefined);
-    
+    const { setRole, role } = useRole();
+
     
     
     useEffect (() =>{
@@ -36,6 +34,7 @@ export const AuthContextProvider = ({children})=>{
         
         try{
 
+            
             const response = await signInWithEmailAndPassword(auth, email, password)
             return {sucess: true}
             
@@ -55,7 +54,9 @@ export const AuthContextProvider = ({children})=>{
     const logout = async () =>{
         try{
             await signOut(auth)
-            return {sucess: true}
+            await AsyncStorage.removeItem('userRole')
+            setRole(null)
+            return {success: true}
         }catch(e){
             return{sucess: false, msg: e.message, error: e}
 

@@ -1,18 +1,14 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Button, Alert } from 'react-native';
-import { useRouter } from 'expo-router';
-import { useAuth } from '../../../context/authContext'
-import {Stack} from  'expo-router'
-
+import { useAuth } from '../../../../context/authContext';
+import {Stack} from  'expo-router';
 
 const ProfileScreen = () => {
-    const router = useRouter();
     const { user } = useAuth();
 
     const{logout} = useAuth()
     const handleLogout = async () =>{
         await logout()
-
     }
     
     return (

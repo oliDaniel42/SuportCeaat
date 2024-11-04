@@ -1,7 +1,7 @@
 import{ View, Text } from 'react-native'
 import React, { useEffect } from 'react'
 import { Slot, useRouter, useSegments } from "expo-router"
-
+import { AuthProvider } from '../app/inicial';
 
 // Import your global CSS file
 import "../global.css"
@@ -36,8 +36,12 @@ export const MainLayout= () =>{
 export default function RootLayout() {
     
     return(
-        <AuthContextProvider>
-            <MainLayout/>
-        </AuthContextProvider>
+         <AuthProvider>
+            <AuthContextProvider>
+                <MainLayout/>
+            </AuthContextProvider>
+        </AuthProvider>
+
    )
 }
+

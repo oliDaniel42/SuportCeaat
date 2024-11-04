@@ -1,19 +1,23 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Pressable } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Pressable, Button } from 'react-native';
 import { useRouter, Stack } from 'expo-router';
+import { useRole } from '../../inicial';
 import { useAuth } from '../../../context/authContext';
 
 const Home = () => {
     const router = useRouter();
+    const{logout} = useAuth()
+    const { role } = useRole();
 
+    
     return (
         <View style={styles.container}>
             <Stack.Screen options={{ headerShown: false }} />
-
             <View style={styles.infocontainer}>
-                <Text style={styles.welcomeText}>Bem-vindo ao App!</Text>
+                <Text style={styles.welcomeText}>Bem-vindo ao App, {role}</Text>
                 <Text style={styles.placeholderText}>Em breve, mais informações sobre o app aqui.</Text>
             </View>
+
 
         </View>
     );

@@ -9,6 +9,7 @@ import Loading from '../components/Loading';
 import CustomKeyBoardView from '../components/CustomKeyboardView';
 import { useAuth } from '../context/authContext';
 
+
 export default function login() {
     const router = useRouter();
 
@@ -23,11 +24,10 @@ export default function login() {
             Alert.alert("Please fill in all fields");
             return;
         }
-
         setLoading(true);
         const response = await login(emailRef.current, passwordRef.current);
         setLoading(false);
-        router.push('inicial')
+        router.replace('inicial')
         if(!response){
             Alert.alert("Login incorreto")
         }
@@ -47,7 +47,7 @@ export default function login() {
                         source={require('../assets/images/login.png')}
                     />
 
-                    <Text style={styles.title}>Bem-Vindo!</Text>
+                    <Text style={styles.title}>Conecte-se conosco</Text>
                     
                     <View style={{ padding: 10 }}>
                         {/* Email and password Input  */}
@@ -143,5 +143,5 @@ const styles = StyleSheet.create({
     },
     enter:{
         fontSize: moderateScale(18),
-    }
+    },
 });

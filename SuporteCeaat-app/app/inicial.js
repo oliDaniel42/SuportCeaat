@@ -1,20 +1,27 @@
-// App.js
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext, createContext } from 'react';
 import { View, Text, Button, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { router, Stack } from "expo-router";
+import { useRouter } from 'expo-router';
 
+const AuthContext = createContext();
 
-const Home = () => {
+export function AuthProvider({ children }) {
   const [role, setRole] = useState(null);
 
-  const signIns = {
-    "Aluno(a)": () => router.replace('home') ,
-    "Funcionário(a)": () => router.replace('home'),
-    "Psicopedagogo(a)": () => router.replace('home'),
-  };
-  
-  // Função para salvar a escolha no AsyncStorage
+  useEffect(() => {
+    const loadRole = async () => {
+      try {
+        const savedRole = await AsyncStorage.getItem('userRole');
+        if (savedRole !== null) {
+          setRole(savedRole);
+        }
+      } catch (error) {
+        console.error('Erro ao carregar a função:', error);
+      }
+    };
+    loadRole();
+  }, []);
+
   const saveRole = async (userType) => {
     try {
       await AsyncStorage.setItem('userRole', userType);
@@ -24,106 +31,68 @@ const Home = () => {
     }
   };
 
+  return (
+    <AuthContext.Provider value={{ role, saveRole }}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
 
-  // Função para carregar a escolha do AsyncStorage ao abrir o app
-  const loadRole = async () => {
-    try {
-      const savedRole = await AsyncStorage.getItem('userRole');
-      if (savedRole !== null) {
-        setRole(savedRole);
-      }
-    } catch (error) {
-      console.error('Erro ao carregar a função:', error);
-    }
-  };
+export function useRole() {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error("useAuth deve ser usado dentro de um AuthProvider");
+  }
+  return context;
 
-  // Carregar a escolha do usuário quando o app for inicializado
-  useEffect(() => {
-    loadRole();
-  }, []);
+}
+
+const Home = () => {
+  const { role, saveRole } = useRole();
+  const router = useRouter();
+
+  const roles = [
+    { title: 'Aluno(a)', color: '#2196F3' },
+    { title: 'Funcionário(a)', color: '#4CAF50' },
+    { title: 'Psicopedagogo(a)', color: '#FF5722' },
+  ];
 
   const handleSelection = (userType) => {
     saveRole(userType);
-
-    const navigate = signIns[userType];
-    if (navigate) {
-    navigate();
-  }
-
+    if(userType === "Aluno(a)"){
+      router.replace('registerScreen')
+    }else{
+      router.replace('home')
+    }
+    console.log(userType)
   };
 
-
   return (
-
     <View style={styles.container}>
-      
-      <Stack.Screen options={{headerShown: false}}/>
-      
       <Text style={styles.title}>SUPORTECEAAT</Text>
       <Text style={styles.subtitle}>Quem é você?</Text>
 
       <View style={styles.buttonContainer}>
-        <View style={styles.button}> 
-            <Button 
-            title="Sou aluno(a)"
-            role = "Aluno(a)"
-            onPress={() => handleSelection('Aluno(a)')}
-            color="#2196F3"
+        {roles.map((role, index) => (
+          <View key={index} style={styles.button}>
+            <Button
+              title={role.title}
+              onPress={() => handleSelection(role.title)}
+              color={role.color}
             />
-        </View>
-        
-        <View style={styles.button}>
-            <Button 
-            title="Sou funcionário(a)"
-            role = "Funcionário(a)"
-            onPress={() => handleSelection('Funcionário(a)')} 
-            color="#4CAF50"
-            />
-        </View>
-        
-        <View style={styles.button}>
-            <Button 
-            title="Sou psicopedagogo(a)"
-            role = "Psicopedagogo(a)"
-            onPress={() => handleSelection('Psicopedagogo(a)')} 
-            color="#FF5722"
-            />
-        </View>
+          </View>
+        ))}
       </View>
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f5f5f5',
-  },
-  title: {
-    fontSize: 40,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
-  subtitle: {
-    fontSize: 25,
-    marginBottom: 30,
-  },
-  buttonContainer: {
-    marginVertical: 10,
-    width: '50%',
-    borderRadius: 8,
-    justifyContent: 'space-between',
-  },
-  button: {
-    marginVertical: 5, // Afasta os botões verticalmente
-  },
-  selectionText: {
-    marginTop: 20,
-    fontSize: 16,
-    fontStyle: 'italic',
-  },
-});
-
 export default Home;
+
+const styles = StyleSheet.create({
+  container: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 20 },
+  subtitle: { fontSize: 18, marginBottom: 30 },
+  buttonContainer: { width: '80%', alignItems: 'center' },
+  button: { marginBottom: 20, width: '100%' },
+});
