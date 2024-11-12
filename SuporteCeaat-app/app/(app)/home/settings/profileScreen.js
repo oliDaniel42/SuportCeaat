@@ -1,124 +1,135 @@
-import React, { useRef, useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Button, Alert } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, Modal, Linking } from 'react-native';
 import { useAuth } from '../../../../context/authContext';
-import {Stack} from  'expo-router';
+import { Stack } from 'expo-router';
+import styles from '../../../../components/Styles';
+import { getDoc, doc, updateDoc } from 'firebase/firestore';
+import { db } from '../../../../firebaseConfig';
+import { Image } from 'expo-image';
 
 const ProfileScreen = () => {
-    const { user } = useAuth();
+  const [profileImage, setProfileImage] = useState(null);
+  const { user, logout } = useAuth();
+  const [userData, setUserData] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [imageUrl, setImageUrl] = useState('');
+  const userId = user?.uid;
 
-    const{logout} = useAuth()
-    const handleLogout = async () =>{
-        await logout()
+  const siteUrl = 'https://www.aconvert.com/pt/image/'
+
+  const handleProfileImageUrlChange = async () => {
+    if (imageUrl) {
+      setProfileImage(imageUrl);
+      const userDocRef = doc(db, 'user', userId);
+      await updateDoc(userDocRef, { profileImage: imageUrl });
+      setModalVisible(false);
+      setImageUrl('');
     }
-    
-    return (
+  };
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (userId) {
+        const docRef = doc(db, 'user', userId);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          setUserData(docSnap.data());
+          setProfileImage(docSnap.data().profileImage);
+        } else {
+          console.log("Documento não encontrado!");
+        }
+      }
+    };
+
+    fetchUserData();
+  }, [userId]);
+
+  const handleLogout = async () => {
+    await logout();
+  };
+
+  const handleLink = () => {
+    Linking.openURL(siteUrl);
+  }
+
+  return (
     <View style={styles.container}>
       <Stack.Screen options={{ headerShown: false }} />
-        {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.headerTitle}>Nome do usuário</Text>
+      {userData ? (
+        <>
+          <View style={styles.header}>
+            <Text style={styles.headerTitle}>{userData.username}</Text>
+          </View>
+
+          <View style={styles.profileIconContainer}>
+            <Image
+              source={profileImage ? { uri: profileImage } : require('../../../../assets/images/avatar.png')}
+              style={styles.profileIcon}
+            />
+          </View>
+
+          <View style={styles.inputContainer}>
+            <View style={styles.inputRow}>
+              <Text style={styles.inputLabel}>Email</Text>
+              <TextInput style={styles.input} value={user?.email} keyboardType="email-address" editable={false} />
+            </View>
+
+            <View style={styles.inputRow}>
+              <Text style={styles.inputLabel}>Senha</Text>
+              <TextInput style={styles.input} value="********" secureTextEntry={true} editable={false} />
+            </View>
+          </View>
+
+          <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.editButton}>
+            <Text style={styles.editButtonText}>Alterar Foto</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={handleLogout} style={styles.editButton}>
+            <Text style={styles.editButtonText}>Desconectar</Text>
+          </TouchableOpacity>
+
+          {/* Modal para inserir URL da imagem */}
+          <Modal
+            visible={modalVisible}
+            transparent={true}
+            animationType="slide"
+            onRequestClose={() => setModalVisible(false)}
+          >
+            <View style={styles.modalOverlay}>
+              <View style={styles.modalContainer}>
+                <Text style={styles.modalTitle}>Insira o URL da Imagem</Text>
+                <TextInput
+                  placeholder="https://exemplo.com/imagem.jpg"
+                  value={imageUrl}
+                  onChangeText={setImageUrl}
+                  style={styles.modalInput}
+                />
+                <View style={styles.modalButtonContainer}>
+                  <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.cancelButton}>
+                    <Text style={styles.cancelButtonText}>Cancelar</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={handleProfileImageUrlChange} style={styles.saveButton}>
+                    <Text style={styles.saveButtonText}>Salvar</Text>
+                  </TouchableOpacity>
+
+                </View>
+                <View style={{marginTop: 10, alignItems: 'center'}}>
+                  <TouchableOpacity onPress={handleLink}>
+                    <Text>Converta a sua imagem aqui</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          </Modal>
+        </>
+      ) : (
+        <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
+          <ActivityIndicator size="large" color="#6E44FF" />
         </View>
-
-        {/* Profile Icon */}
-        <View style={styles.profileIconContainer}>
-        <View style={styles.profileIcon}>
-            {/* Placeholder for the profile image */}
-        </View>
-        </View>
-
-        {/* Inputs */}
-        <View style={styles.inputContainer}>
-
-        <View style={styles.inputRow}>
-            <Text style={styles.inputLabel}>Email</Text>
-            <TextInput style={styles.input} value={user?.email} keyboardType="email-address" editable={false}/>
-        </View>
-
-        <View style={styles.inputRow}>
-            <Text style={styles.inputLabel}>Password</Text>
-            <TextInput style={styles.input} value="********" secureTextEntry={true} editable={false} />
-        </View>
-        </View>
-
-        {/* Edit Profile Button */}
-        <TouchableOpacity style={styles.editButton}>
-        <Text style={styles.editButtonText}>Alterar Foto</Text>
-        </TouchableOpacity>
-
-        {/* Edit Profile Button */}
-        <TouchableOpacity onPress={handleLogout} style={styles.editButton}>
-        <Text style={styles.editButtonText}>Desconectar</Text>
-        </TouchableOpacity>
-
+      )}
     </View>
-    );
+  );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 20,
-    backgroundColor: '#6E44FF',
-    borderBottomLeftRadius: 60,
-    borderBottomRightRadius: 60,
-    height: 100,
-  },
-  backArrow: {
-    fontSize: 24,
-    color: '#fff',
-  },
-  headerTitle: {
-    fontSize: 20,
-    color: '#fff',
-    marginLeft: 110,
-    alignItems:"center",
-    paddingTop: 20,
-  },
-  profileIconContainer: {
-    alignItems: 'center',
-    marginTop: 30,
-  },
-  profileIcon: {
-    width: 150,
-    height: 150,
-    backgroundColor: '#E0E0E0',
-    borderRadius: 80,
-  },
-  inputContainer: {
-    paddingHorizontal: 32,
-    marginTop: 40,
-  },
-  inputRow: {
-    marginBottom: 25,
-  },
-  inputLabel: {
-    marginBottom: 8,
-    fontSize: 16,
-    color: '#6E44FF',
-  },
-  input: {
-    backgroundColor: '#F3F3F3',
-    borderRadius: 10,
-    padding: 12,
-    fontSize: 16,
-  },
-  editButton: {
-    marginHorizontal: 32,
-    marginTop: 20,
-    backgroundColor: '#6E44FF',
-    paddingVertical: 15,
-    borderRadius: 30,
-    alignItems: 'center',
-  },
-  editButtonText: {
-    color: '#fff',
-    fontSize: 18,
-  },
-});
 
 export default ProfileScreen;

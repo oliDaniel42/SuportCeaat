@@ -1,8 +1,7 @@
-import { View, Text, StyleSheet, Image, TextInput, TouchableOpacity, Pressable, Alert, Linking } from 'react-native';
+import { View, Text, StyleSheet, Image, TextInput, TouchableOpacity, Pressable, Alert, Linking, StatusBar } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import { moderateScale } from 'react-native-core-responsive-screen';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { StatusBar } from 'react-native';
 import tw from 'twrnc';
 import { useRouter } from 'expo-router';
 import Loading from '../components/Loading';
@@ -27,7 +26,7 @@ export default function login() {
         setLoading(true);
         const response = await login(emailRef.current, passwordRef.current);
         setLoading(false);
-        router.replace('inicial')
+        router.replace('home')
         if(!response){
             Alert.alert("Login incorreto")
         }
@@ -87,6 +86,17 @@ export default function login() {
                             />
                         </View>
 
+
+                        <View style={styles.register}>
+                            <Text> Ainda sem conta? </Text>
+
+                            <TouchableOpacity onPress={() => router.replace('inicial')}>
+                                <Text style={styles.button}>Criar conta</Text>
+                            </TouchableOpacity>
+                        </View>
+
+
+
                         <View>
                             {loading?(
                                 <View style={[tw`flex-row justify-center`, {padding: 20} ]}>
@@ -144,4 +154,12 @@ const styles = StyleSheet.create({
     enter:{
         fontSize: moderateScale(18),
     },
+    register:{
+        alignItems:"center",
+        justifyContent:"center",
+        flexDirection:'row',
+    },
+    button:{
+        color:'#6f48df'
+    }
 });

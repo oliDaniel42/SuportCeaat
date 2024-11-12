@@ -3,11 +3,13 @@ import { View, Text, Button, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 
+
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const [role, setRole] = useState(null);
-
+  
+ 
   useEffect(() => {
     const loadRole = async () => {
       try {
@@ -59,11 +61,7 @@ const Home = () => {
 
   const handleSelection = (userType) => {
     saveRole(userType);
-    if(userType === "Aluno(a)"){
-      router.replace('registerScreen')
-    }else{
-      router.replace('home')
-    }
+    router.replace('registerScreen')
     console.log(userType)
   };
 

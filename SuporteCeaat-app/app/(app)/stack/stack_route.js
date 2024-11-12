@@ -1,6 +1,5 @@
 import { createStackNavigator } from "@react-navigation/stack";
 import ProfileScreen from "../home/settings/profileScreen";
-import StudentProfile from "../home/settings/studentProfile";
 import { useRole } from "../../inicial";
 
 const Stack = createStackNavigator();
@@ -22,7 +21,7 @@ const getScreen = (role) => {
       return (
           <Stack.Screen
             name="Register"
-            component={StudentProfile}
+            component={ProfileScreen}
           />
       );
     default:

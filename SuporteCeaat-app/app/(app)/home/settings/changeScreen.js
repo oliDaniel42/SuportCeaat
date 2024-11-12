@@ -1,125 +1,86 @@
-import React, { useState,  useEffect } from 'react';
-import { View, Text, StyleSheet, TextInput, Button, BackHandler } from 'react-native';
-import { createStackNavigator } from '@react-navigation/stack';
-import { useRouter, useLocalSearchParams } from 'expo-router';
-
-const Stack = createStackNavigator();
-
+import React, { useState, useEffect } from 'react';
+import { View, Text, Button } from 'react-native';
+import { useRouter } from 'expo-router';
+import { useAuth } from '../../../../context/authContext';
+import { db } from '../../../../firebaseConfig';
+import { getDoc, doc } from 'firebase/firestore';
+import styles from '../../../../components/Styles';
+import { ActivityIndicator } from 'react-native';
 
 export default function ChangeScreen() {
   const router = useRouter();
-
-  const { studantId } = useLocalSearchParams(); 
-
+  const { user } = useAuth();
   const [studentData, setStudentData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const studentId = user.uid;
 
   useEffect(() => {
-      const fetchStudentData = async () => {
-          if (studantId) {
-              try {
-                  const docRef = doc(db, 'students', studantId);
-                  const docSnap = await getDoc(docRef);
-                  if (docSnap.exists()) {
-                      setStudentData(docSnap.data());
-                  } else {
-                      console.log('Documento não encontrado.');
-                  }
-              } catch (error) {
-                  console.error('Erro ao buscar dados:', error);
-              }
-          }
-      };
+    const fetchStudentData = async () => {
+      try {
+        const docRef = doc(db, 'student', studentId);
+        const docSnap = await getDoc(docRef);
 
-      fetchStudentData();
-  }, [studantId]);
+        if (docSnap.exists()) {
+          setStudentData(docSnap.data());
+        } else {
+          console.log("No such document!");
+        }
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  if (!studentData) {
-      return <Text style={{justifyContent: "center", textAlign:"center"}}>Carregando...</Text>;
-  }
+    fetchStudentData();
+  }, [studentId]);
 
   const handleRegister = () => {
-    router.push('registerScreen')
+    router.push('alunoRegister')
   };
 
   return (
-   
-      <View style={styles.container}>
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>Registro</Text>
+      </View>
 
-        <Text style={styles.title}>Seu registro</Text>
-
-        <View style={styles.inputContainer}>
-
-            <View style={styles.inputRow}>
-                <Text style={styles.inputLabel}>Nome completo</Text>
-                <TextInput style={styles.input} value={studantId?.name} editable={false}/>
-            </View>
-
-            <View style={styles.inputRow}>
+      <View style={styles.inputContainer}>
+        {loading ? (
+          <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
+            <ActivityIndicator size="large" color="#6E44FF" />
+          </View>
+        ) : (
+          studentData ? (
+            <>
+              <View style={styles.inputRow}>
                 <Text style={styles.inputLabel}>Sua série</Text>
-                <TextInput style={styles.input} value={''} editable={false}/>
-            </View>
-          
-            <View style={styles.inputRow}>
+                <Text style={styles.input}> {studentData.grade} </Text>
+              </View>
+
+              <View style={styles.inputRow}>
                 <Text style={styles.inputLabel}>Sua turma</Text>
-                <TextInput style={styles.input} value={''} editable={false}/>
-            </View>
-        
-            <View style={styles.inputRow}>
+                <Text style={styles.input}> {studentData.classgroup} </Text>
+              </View>
+
+              <View style={styles.inputRow}>
                 <Text style={styles.inputLabel}>Curso</Text>
-                <TextInput style={styles.input} value={''} editable={false}/>
+                <Text style={styles.input}> {studentData.coursetype} </Text>
+              </View>
+
+              <Button
+                title="Alterar"
+                onPress={handleRegister}
+                color="#6E44FF"
+              />
+            </>
+          ) : (
+            <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
+              <Text>Nenhum dado encontrado.</Text>
             </View>
-          
-          <Button 
-          title="Alterar" 
-          onPress={handleRegister}
-          color="#6E44FF" 
-          />
-        </View>
-
-        </View>
-
+          )
+        )}
+      </View>
+    </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    justifyContent: 'center',
-    backgroundColor: '#fff',
-
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 10,
-    marginTop: 90,
-    textAlign: 'center',
-    height:100,
-  },
-  picker: {
-    height: 20,
-    borderColor: 'gray',
-    borderWidth: 2,
-    marginBottom: 20,
-  },
-  inputContainer: {
-    paddingHorizontal: 22,
-    paddingVertical: 30,
-    marginBottom: 80,
-  },
-  inputRow: {
-    marginBottom: 25,
-  },
-  inputLabel: {
-    marginBottom: 8,
-    fontSize: 16,
-    color: '#6E44FF',
-  },
-  input: {
-    backgroundColor: '#F3F3F3',
-    borderRadius: 10,
-    padding: 12,
-    fontSize: 16,
-  },
-});
