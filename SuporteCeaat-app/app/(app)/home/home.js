@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { where, getDocs, query, getDoc, doc } from 'firebase/firestore';
+import { where, getDocs, query, getDoc, doc, collection, addDoc, Timestamp } from 'firebase/firestore';
 import { usersRef, db } from '../../../firebaseConfig';
 import { useAuth } from '../../../context/authContext';
 import styles from '../../../components/Styles';
@@ -13,14 +13,12 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 const Home = () => {
     const { user } = useAuth();
     const { role } = useRole();
-    
 
-    const [users, setUsers] = useState([]); // Inicializa como null para controlar o estado de carregamento
+    const [users, setUsers] = useState([]); 
     const [userData, setUserData] = useState(null);
     const [studentData, setStudentData] = useState(null);
     const userId = user?.uid;
 
-    // Função para buscar dados do usuário
     useEffect(() => {
         const fetchUserData = async () => {
             try {
@@ -43,43 +41,49 @@ const Home = () => {
             fetchUserData();
         }
     }, [userId]);
-    
-    
+
+    const handleSendEmergency = async () => {
+        try {
+            const emergenciesRef = collection(db, 'emergencies');
+            await addDoc(emergenciesRef, {
+                senderName: userData.username,
+                classGroup: studentData.classgroup,
+                grade: studentData.grade,
+                courseType: studentData.coursetype,
+                text: " Emergência! Preciso de ajuda urgente!",
+                createdAt: Timestamp.fromDate(new Date()),
+            });
+
+            console.log('Mensagem de emergência enviada!');
+        } catch (error) {
+            console.log('Erro ao enviar a mensagem de emergência:', error);
+        }
+    };
 
     const getUsers = async () => {
         try {
             let q;
             if (role === 'Aluno(a)' || role === 'Funcionário(a)') {
-                // Se o usuário for Aluno(a), busca apenas Psicopedagogos(as)
                 q = query(usersRef, where('role', '==', 'Psicopedagogo(a)'));
             } else if (role === 'Psicopedagogo(a)') {
-                // Se o usuário for Psicopedagogo(a), busca apenas Alunos(as)
                 q = query(usersRef, where('role', 'in', ['Aluno(a)', 'Funcionário(a)']));
             }
 
-            if (q) { // Verifica se a query foi definida antes de executar
+            if (q) { 
                 const querySnapshot = await getDocs(q);
                 const data = querySnapshot.docs.map(doc => ({ ...doc.data() }));
                 setUsers(data);
-                
             }
         } catch (error) {
             console.error("Erro ao buscar usuários:", error);
         }
+    };
 
-    }
-    // Função para buscar outros usuários
     useEffect(() => {
-    
         if (userId) {
             getUsers();
         }
-    }, []);
-
-    // Função de emergência
-    const emergency = () => {
-        console.log('emergencia')
-    };
+    }, [userId]);
 
     return (
         <>
@@ -94,15 +98,12 @@ const Home = () => {
             <View style={{ flex: 5, backgroundColor: '#fff' }}>
                 {users.length > 0?(
                     <Chatlist users={users}/>
-                ):(
+                ):( 
                     <View style={{alignItems:'center', flex: 1, justifyContent: 'center'}}>
                         <ActivityIndicator size ='large' color='#6E44FF'></ActivityIndicator>
                     </View>
                 )}
             </View>
-
-            {/* botão de emergencia*/}
-            
 
             {role === 'Aluno(a)' && (
                 <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', height: hp('10%'), backgroundColor: 'white' }}>
@@ -112,7 +113,7 @@ const Home = () => {
                             height: hp('40%'),
                             width: wp('40%')
                         }}
-                        onPress={emergency}
+                        onPress={handleSendEmergency}
                     >
                         <Ionicons name="alert-circle" size={wp('40%')} color="red" />
                     </TouchableOpacity>

@@ -95,7 +95,7 @@ const styles =  StyleSheet.create({
 },
 modalOverlay: {
   flex: 1,
-  backgroundColor: '',
+  backgroundColor: 'rgba(0,0,0,0.5)',
   justifyContent: 'center',
   alignItems: 'center',
 },
@@ -165,7 +165,42 @@ messageContainer: {
   maxWidth: 600,
   marginVertical: moderateScale(10),
   backgroundColor:'white'
+},
+imageContainer:{
+  flex: 1,
+  borderRadius: 34,
+  overflow:'hidden'
+},
+image:{
+  width:'100%',
+  height: undefined,
+  aspectRatio: 1
+},
+emergencyItem: {
+  backgroundColor: '#ffe6e6',
+  padding: 10,
+  marginVertical: 5,
+  borderRadius: 8,
+},
+emergencyText: {
+  fontSize: 16,
+  fontWeight: 'bold',
+  color: '#b30000',
+},
+emergencySender: {
+  fontSize: 14,
+  color: '#333',
+},
+emergencyTimestamp: {
+  fontSize: 12,
+  color: '#666',
+  marginTop: 5,
+},
+emergencyList: {
+  paddingHorizontal: 15,
+  paddingTop: 10,
 }
+
 })
 
 export default styles;

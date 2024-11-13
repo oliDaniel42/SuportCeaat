@@ -3,6 +3,7 @@ import { createDrawerNavigator } from "@react-navigation/drawer";
 import layout from "../(app)/home/_layout";
 import stackRoute from "../(app)/stack/stack_route";
 import changeScreen from  "./home/settings/changeScreen";
+import Notifications from "../../components/Notifications";
 import { useState, useEffect} from "react";
 import {ActivityIndicator, StyleSheet} from "react-native"
 
@@ -24,6 +25,7 @@ const routes = {
   "Psicopedagogo(a)": [
     { name: "PsicopedagogoHome", component: layout, label: "Ínicio" },
     { name: "Profile", component: stackRoute, label: "Seu Perfil" },
+    { name: "Emergencias", component: Notifications, label: "Emergências" },
   ],
 };
 
